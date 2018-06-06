@@ -1,0 +1,2 @@
+python images_split_train_test.py -p 0.25
+python retile.py -t 96 -a 0.9 -b 0.5

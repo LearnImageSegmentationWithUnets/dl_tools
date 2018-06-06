@@ -1,0 +1,10 @@
+y
+r
+#8B008B
+gray
+c
+w
+#FFD700
+#D2691E
+g
+b

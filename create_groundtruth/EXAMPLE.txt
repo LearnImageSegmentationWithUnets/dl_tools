@@ -1,0 +1,1 @@
+python label_1image_crf.py -w 400 -s 0.125

@@ -1,0 +1,1 @@
+ bash retrain_m2.sh "C:\Users\ddb265\Desktop\Monterey_scarps\useim\tile_96" 96 1000 0.01

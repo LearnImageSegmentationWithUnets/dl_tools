@@ -1,3 +1,6 @@
+## written by Dr Daniel Buscombe
+## Northern Arizona University
+## daniel.buscombe@nau.edu
 
 #general
 from __future__ import division
@@ -6,6 +9,21 @@ import sys, getopt, os
 from glob import glob
 from scipy.misc import imread
 import itertools
+
+if sys.version[0]=='3':
+   from tkinter import Tk, Toplevel 
+   from tkinter.filedialog import askopenfilename, askdirectory
+   import tkinter
+   import tkinter as tk
+   from tkinter.messagebox import *   
+   from tkinter.filedialog import *
+else:
+   from Tkinter import Tk, TopLevel
+   from tkFileDialog import askopenfilename, askdirectory
+   import Tkinter as tkinter
+   import Tkinter as tk
+   from Tkinter.messagebox import *   
+   from Tkinter.filedialog import *   
 
 #numerical
 import tensorflow as tf
@@ -42,7 +60,7 @@ def plot_confusion_matrix2(cm, classes, normalize=False, cmap=plt.cm.Blues, dola
     thresh = cm.max() / 2.
     if dolabels==True:
        tick_marks = np.arange(len(classes))
-       plt.xticks(tick_marks, classes, fontsize=3) # rotation=45
+       plt.xticks(tick_marks, classes, fontsize=3, rotation=45) # 
        plt.yticks(tick_marks, classes, fontsize=3)
 
        plt.ylabel('True label',fontsize=6)
@@ -163,50 +181,41 @@ if __name__ == '__main__':
 
    argv = sys.argv[1:]
    try:
-      opts, args = getopt.getopt(argv,"hi:t:n:")
+      opts, args = getopt.getopt(argv,"hn:")
    except getopt.GetoptError:
-      print('python test_class_tiles.py -i direc -t tilesize -n number')
+      print('python test_class_tiles.py -n number')
       sys.exit(2)
 
    for opt, arg in opts:
       if opt == '-h':
-         print('Example usage: python test_class_tiles.py -i test -t 96 -n 100')
+         print('Example usage: python test_class_tiles.py -n 100')
          sys.exit()
-      elif opt in ("-i"):
-         direc = arg
-      elif opt in ("-t"):
-         tile = arg
       elif opt in ("-n"):
-         thres = arg
+         numero = arg
 
-   if not direc:
-      direc = 'test'
-   if not tile:
-      tile = 96
    if not numero:
       numero = 100
 
-   tile = int(tile)
-   n = tile
    numero = int(numero)
 
-   #=============================================
-   #tile = n = 96
-   #numero = 100
-
-   direc=direc+os.sep+'tile_'+str(tile)
-   class_file = 'labels.txt'
+   #===============================================
+   # Run main application
+   Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing   
+   
+   direc = askdirectory()
+   labels_path = askopenfilename(filetypes=[("pick a labels file","*.txt")], multiple=False)  
+   classifier_file = askopenfilename(filetypes=[("pick a labels file","*.pb")], multiple=False)  
+   
    #=============================================
 
    ## Loads label file, strips off carriage return
-   labels = [line.rstrip() for line 
-                in tf.gfile.GFile(class_file)]
+   with open(labels_path) as f: #'labels.txt') as f:
+      labels = f.readlines()
+   labels = [x.strip() for x in labels] 
 
    code= {}
    for label in labels:
       code[label] = [i for i, x in enumerate([x.startswith(label) for x in labels]) if x].pop()
-
-   classifier_file = 'mobilenetv2_'+str(tile)+'.pb'
 
    w = Parallel(n_jobs=-1, verbose=0)(delayed(eval_tiles)(label, direc, numero, classifier_file, code[label], len(labels)) for label in labels) 
    E, CM = zip(*w)
@@ -221,8 +230,8 @@ if __name__ == '__main__':
 
    fig = plt.figure()
    ax1 = fig.add_subplot(221)
-   plot_confusion_matrix2(CM, classes=labels, normalize=True, cmap=plt.cm.Reds)
-   plt.savefig('test_cm_'+str(tile)+'.png', dpi=300, bbox_inches='tight')
+   plot_confusion_matrix2(CM, classes=labels, normalize=True, cmap=plt.cm.Greens)
+   plt.savefig(direc+os.sep+'test_cm.png', dpi=300, bbox_inches='tight')
    del fig; plt.close()
 
    a=np.asarray(E)[:,0] 
