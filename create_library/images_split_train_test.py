@@ -2,6 +2,8 @@
 ## Northern Arizona University
 ## daniel.buscombe@nau.edu
 
+## This function will take an directory of images and sort them into training and testing sets, based on a given split
+
 from imageio import imread, imsave
 import sys, getopt, os, shutil, glob
 import numpy as np

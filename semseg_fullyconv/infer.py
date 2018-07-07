@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-#-------------------------------------------------------------------------------
-# Author: Lukasz Janyst <lukasz@jany.st>
-# Date:   15.06.2017
-#-------------------------------------------------------------------------------
+## written by Dr Daniel Buscombe
+## Northern Arizona University
+## daniel.buscombe@nau.edu
+
 ## python infer.py --name cityscapes_test3 --samples-dir data_kitti/testing/image_2 --output-dir cityscapes_test_output --data-source cityscapes
 
 ## python infer.py --name seabright_test --samples-dir data_seabright/samples/RGB/val/seabright --output-dir seabright_test_output --data-source seabright

@@ -2,6 +2,8 @@
 ## Northern Arizona University
 ## daniel.buscombe@nau.edu
 
+## This function will take an directory of image tiles and sort them into training and testing sets, based on a given split
+
 from imageio import imread, imsave
 import sys, getopt, os, shutil, glob
 from joblib import Parallel, delayed

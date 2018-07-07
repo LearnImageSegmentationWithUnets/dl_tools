@@ -2,6 +2,8 @@
 ## Northern Arizona University
 ## daniel.buscombe@nau.edu
 
+## This function will take an directory of images and their associated .mat files (which contain dense pixelwise labels), create image tiles, and sort them into folders based on class
+
 #general
 from __future__ import division
 from joblib import Parallel, delayed

@@ -1,0 +1,15 @@
+agricultural
+anthro
+cliff
+drysand
+dune
+duneveg
+foam
+marsh
+road
+shrubland
+swash
+terrain
+veg
+water
+wetsand

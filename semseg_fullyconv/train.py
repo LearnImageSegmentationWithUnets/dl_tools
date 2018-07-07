@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-#-------------------------------------------------------------------------------
-# Author: Lukasz Janyst <lukasz@jany.st>
-# Date:   14.06.2017
-#-------------------------------------------------------------------------------
+## written by Dr Daniel Buscombe
+## Northern Arizona University
+## daniel.buscombe@nau.edu
 
 ##python train.py --name cityscapes_test3 --data-source cityscapes --data-dir data 
 ##python train.py --name seabright_test --data-source seabright --data-dir data_seabright --epochs 100
@@ -10,7 +9,7 @@
 ##for file in *.JPG; do magick $file "${file%.JPG}"; done
 ##python train.py --name ontario_test --data-source ontario --data-dir data_ontario --epochs 10
 
-##python train.py --name elwha_test --data-source elwha --data-dir data_elwha --epochs 10
+##python train.py --name data_test10 --data-source data --data-dir C:\Users\ddb265\Desktop\semseg_data\Monterey_scarps\data --epochs 10
 
 import argparse
 import math

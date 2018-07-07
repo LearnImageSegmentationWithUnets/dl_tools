@@ -1,9 +1,0 @@
-anthro
-cliff
-drysand
-foam
-road
-terrain
-veg
-water
-wetsand

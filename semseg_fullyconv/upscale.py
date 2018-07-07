@@ -1,11 +1,11 @@
 #-------------------------------------------------------------------------------
-# Author: Lukasz Janyst <lukasz@jany.st>
-# Date:   14.06.2017
+## written by Dr Daniel Buscombe
+## Northern Arizona University
+## daniel.buscombe@nau.edu
 #
 # This essentially is the code from
 # http://cv-tricks.com/image-segmentation/transpose-convolution-in-tensorflow/
-# with minor modifications done by me. See test_upscale.py to see how it works.
-#-------------------------------------------------------------------------------
+# with minor modifications done by me. 
 
 import tensorflow as tf
 import numpy as np

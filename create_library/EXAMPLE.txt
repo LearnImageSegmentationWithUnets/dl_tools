@@ -1,2 +1,8 @@
+## This function will take an directory of images and sort them into training and testing sets, based on a given split
+
 python images_split_train_test.py -p 0.25
+
+
+## This function will take an directory of images and their associated .mat files (which contain dense pixelwise labels), create image tiles, and sort them into folders based on class
+
 python retile.py -t 96 -a 0.9 -b 0.5

@@ -5,17 +5,6 @@
 #python script to carry out quick semi-supervised segmentation of a single image
 #uses manual labeling of regions of image as unary potentials for a fully-connected conditional random field
 
-# conda create --name tfpy35 python=3.5
-# conda activate tfpy35
-# pip install Cython
-# conda config --add channels conda-forge
-# conda install pydensecrf
-# conda config --remove channels conda-forge
-# pip install numpy scipy matplotlib scikit-image scikit-learn
-# pip install joblib
-# pip install tensorflow tensorflow_hub
-
-
 from __future__ import division
 
 import sys, getopt, os

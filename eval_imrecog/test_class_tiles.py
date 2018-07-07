@@ -204,7 +204,7 @@ if __name__ == '__main__':
    
    direc = askdirectory()
    labels_path = askopenfilename(filetypes=[("pick a labels file","*.txt")], multiple=False)  
-   classifier_file = askopenfilename(filetypes=[("pick a labels file","*.pb")], multiple=False)  
+   classifier_file = askopenfilename(filetypes=[("pick a pb classifier file","*.pb")], multiple=False)  
    
    #=============================================
 

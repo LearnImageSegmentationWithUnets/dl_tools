@@ -1,6 +1,8 @@
+## written by Dr Daniel Buscombe
+## Northern Arizona University
+## daniel.buscombe@nau.edu
 
-
-import os
+import os, sys, getopt
 from scipy.io import savemat, loadmat
 from glob import glob
 from sklearn.metrics import precision_recall_fscore_support
@@ -9,6 +11,55 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 
+if sys.version[0]=='3':
+   from tkinter import Tk, Toplevel 
+   from tkinter.filedialog import askopenfilename, askdirectory
+   import tkinter
+   import tkinter as tk
+   from tkinter.messagebox import *   
+   from tkinter.filedialog import *
+else:
+   from Tkinter import Tk, TopLevel
+   from tkFileDialog import askopenfilename, askdirectory
+   import Tkinter as tkinter
+   import Tkinter as tk
+   from Tkinter.messagebox import *   
+   from Tkinter.filedialog import *   
+
+#=====================================================
+def get_stats(cm):
+
+    m, n = np.shape(cm)
+	
+    TP = []
+    for x in range(n):
+        TP.append(cm[x, x])
+    
+    FP = []
+    for x in range(n):
+        FP.append(sum(cm[:, x])-cm[x, x])
+
+    FN = []
+    for x in range(n):
+        FN.append(sum(cm[x, :], 2)-cm[x, x])    
+        
+    TP = np.asarray(TP)
+    FP = np.asarray(FP)
+    FN = np.asarray(FN)    
+        
+    p = tp/(tp+fp)
+    p[p==0] = np.nan
+
+    r = tp/(tp+fn)
+    r[r==0] = np.nan    
+
+    p = np.nanmean(p)
+    r = np.nanmean(r)
+    
+    f = 2*((p*r)/(p+r))
+    
+    return p, r, f
+	
 ## =========================================================
 def plot_confusion_matrix2(cm, classes, normalize=False, cmap=plt.cm.Blues, dolabels=True):
     """
@@ -43,61 +94,96 @@ def plot_confusion_matrix2(cm, classes, normalize=False, cmap=plt.cm.Blues, dola
 
     return cm
 
-tile = 192 #96 #128 #160 #192 #224
-direc='test'
 
+#==============================================================
+if __name__ == '__main__':
 
-mres = sorted(glob(direc+os.sep+'*.mat'))
+   #direc = ''; tile = ''
 
+   #argv = sys.argv[1:]
+   #try:
+   #   opts, args = getopt.getopt(argv,"ht:")
+   #except getopt.GetoptError:
+   #   print('python test_class_tiles.py -t tile')
+   #   sys.exit(2)
 
-ares = sorted(glob('*'+str(tile)+'*.mat'))
+   #for opt, arg in opts:
+   #   if opt == '-h':
+   #      print('Example usage: python test_class_tiles.py -t tile')
+   #      sys.exit()
+   #   elif opt in ("-t"):
+   #      tile = arg	
 
+   #===============================================
+   # Run main application
+   Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing   
+   
+   direc = askdirectory()	
+	
+   ##tile = 192 #96 #128 #160 #192 #224
+   ##direc='test'
 
-for k in range(len(ares)):
-   a = loadmat(ares[k])['class']
-   c = loadmat(mres[k])['class']
+   ##tile = int(tile)
+   
+   mres = sorted(glob(direc+os.sep+'*mres*.mat'))
 
-   alabs = loadmat(ares[k])['labels']
-   clabs = loadmat(mres[k])['labels']
-   alabs = [label.replace(' ','') for label in alabs]
-   clabs = [label.replace(' ','') for label in clabs]
-   cind = [clabs.index(x) for x in alabs]
-   aind = [alabs.index(x) for x in alabs]
+   ares = sorted(glob(direc+os.sep+'*ares*.mat'))
+   
 
-   if k==0:
-      Cmaster = np.zeros((len(alabs), len(alabs)))
+   for k in range(len(ares)):
+      print("loading "+ares[k])
+      print("loading "+mres[k])
+	  
+      a = loadmat(ares[k])['class']
+      c = loadmat(mres[k])['class']
 
-   c2 = c.copy()
-   for kk in range(len(aind)):
-      if cind[kk] != aind[kk]:
-         c2[c==cind[kk]] = aind[kk] 
-   del c
+      alabs = loadmat(ares[k])['labels']
+      clabs = loadmat(mres[k])['labels']
+      alabs = [label.replace(' ','') for label in alabs]
+      clabs = [label.replace(' ','') for label in clabs]
+      cind = [clabs.index(x) for x in alabs]
+      aind = [alabs.index(x) for x in alabs]
 
-   e = precision_recall_fscore_support(a.flatten(), c2.flatten())
-   p = np.mean(e[0])
-   r = np.mean(e[1])
-   f = np.mean(e[2])
+      if k==0:
+         Cmaster = np.zeros((len(alabs), len(alabs)))
+
+      c2 = c.copy()
+      for kk in range(len(aind)):
+         if cind[kk] != aind[kk]:
+            c2[c==cind[kk]] = aind[kk] 
+      del c
+
+      #e = precision_recall_fscore_support(a.flatten(), c2.flatten())
+      #p = np.mean(e[0])
+      #r = np.mean(e[1])
+      #f = np.mean(e[2])
+   
+      CM = confusion_matrix(a.flatten(), c2.flatten())
+
+      CM = np.asarray(CM)
+	  
+      p, r, f = get_stats(CM)	  	  
+      print('precision: %f' %(p))
+      print('recall: %f' %(r))
+      print('f-score: %f' %(f))
+   
+      fig = plt.figure()
+      ax1 = fig.add_subplot(221)
+      plot_confusion_matrix2(CM, classes=alabs, normalize=True, cmap=plt.cm.Reds)
+      plt.savefig(ares[k].split(os.sep)[-1].split('.mat')[0]+'cm_'+str(tile)+'.png', dpi=300, bbox_inches='tight')
+      del fig; plt.close()
+
+      Cmaster += CM
+
+   p, r, f = get_stats(Cmaster)	  	  
    print('precision: %f' %(p))
    print('recall: %f' %(r))
    print('f-score: %f' %(f))
-
-   CM = confusion_matrix(a.flatten(), c2.flatten())
-
-   CM = np.asarray(CM)
-
+	  
    fig = plt.figure()
    ax1 = fig.add_subplot(221)
-   plot_confusion_matrix2(CM, classes=alabs, normalize=True, cmap=plt.cm.Reds)
-   plt.savefig(ares[k].split(os.sep)[-1].split('.mat')[0]+'cm_'+str(tile)+'.png', dpi=300, bbox_inches='tight')
+   plot_confusion_matrix2(Cmaster, classes=alabs, normalize=True, cmap=plt.cm.Reds)
+   plt.savefig('cm.png', dpi=300, bbox_inches='tight')
    del fig; plt.close()
-
-   Cmaster += CM
-
-
-fig = plt.figure()
-ax1 = fig.add_subplot(221)
-plot_confusion_matrix2(Cmaster, classes=alabs, normalize=True, cmap=plt.cm.Reds)
-plt.savefig('cm_'+str(tile)+'c.png', dpi=300, bbox_inches='tight')
-del fig; plt.close()
 
 

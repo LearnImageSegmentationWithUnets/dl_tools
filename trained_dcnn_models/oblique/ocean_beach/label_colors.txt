@@ -1,9 +1,0 @@
-r
-#8B008B
-y
-w
-gray
-#D2691E
-g
-b
-#FFD700
