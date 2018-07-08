@@ -2,6 +2,7 @@
 ## Northern Arizona University
 ## daniel.buscombe@nau.edu
 
+import os
 import numpy as np
 from scipy.io import loadmat
 from scipy.misc import imsave
@@ -10,15 +11,18 @@ from collections import namedtuple
 from glob import glob
 import sys
 
-import s3fs
-fs = s3fs.S3FileSystem(anon=True)
+try:
+   import s3fs
+   fs = s3fs.S3FileSystem(anon=True)
+except:
+   from glob import glob
 
-#if sys.version[0]=='3':
-#   from tkinter import Tk
-#   from tkinter.filedialog import askopenfilename
-#else:
-#   from Tkinter import Tk
-#   from tkFileDialog import askopenfilename  
+if sys.version[0]=='3':
+  from tkinter import Tk
+  from tkinter.filedialog import askopenfilename
+else:
+  from Tkinter import Tk
+  from tkFileDialog import askopenfilename  
 
 from skimage.filters.rank import median
 from skimage.morphology import disk   
@@ -34,9 +38,15 @@ if __name__ == '__main__':
 
    Label = namedtuple('Label', ['name', 'color'])
 
-   files = [f for f in fs.ls(direc) if f.endswith('.mat')]
+   try:
+      files = [f for f in fs.ls(direc) if f.endswith('.mat')]
+   except:
+      files = glob(direc+os.sep+'*.mat')
 
-   with open('labeldefs.txt') as f:
+   Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing   
+   file = askopenfilename(filetypes=[("pick a labeldefs files","*.txt")], multiple=True)  
+    	  
+   with open(file[0]) as f:
       labels = f.readlines()
    labels = [x.strip() for x in labels]
 

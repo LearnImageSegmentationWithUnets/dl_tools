@@ -4,12 +4,20 @@
 
 import random
 import cv2
-import os
+import os, sys
 
 import numpy as np
 
 from collections import namedtuple
 from glob import glob
+
+if sys.version[0]=='3':
+  from tkinter import Tk
+  from tkinter.filedialog import askopenfilename
+else:
+  from Tkinter import Tk
+  from tkFileDialog import askopenfilename  
+
 
 #-------------------------------------------------------------------------------
 # Labels
@@ -20,9 +28,17 @@ Label = namedtuple('Label', ['name', 'color'])
 def rgb2bgr(tpl):
     return (tpl[2], tpl[1], tpl[0])
 
-with open('labeldefs.txt') as f:
+#with open('labeldefs.txt') as f:
+#   labels = f.readlines()
+#labels = [x.strip() for x in labels]
+
+Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing   
+file = askopenfilename(filetypes=[("pick a labeldefs files","*.txt")], multiple=True)  
+    	  
+with open(file[0]) as f:
    labels = f.readlines()
 labels = [x.strip() for x in labels]
+
 
 label_defs = []
 for label in labels:
