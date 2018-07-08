@@ -1,5 +1,0 @@
-anthro
-sediment
-terrain
-veg
-water

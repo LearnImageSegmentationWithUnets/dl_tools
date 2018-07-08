@@ -43,9 +43,9 @@ def get_stats(cm):
     for x in range(n):
         FN.append(sum(cm[x, :], 2)-cm[x, x])    
         
-    TP = np.asarray(TP)
-    FP = np.asarray(FP)
-    FN = np.asarray(FN)    
+    tp = np.asarray(TP)
+    fp = np.asarray(FP)
+    fn = np.asarray(FN)    
         
     p = tp/(tp+fp)
     p[p==0] = np.nan
@@ -170,20 +170,15 @@ if __name__ == '__main__':
       fig = plt.figure()
       ax1 = fig.add_subplot(221)
       plot_confusion_matrix2(CM, classes=alabs, normalize=True, cmap=plt.cm.Reds)
-      plt.savefig(ares[k].split(os.sep)[-1].split('.mat')[0]+'cm_'+str(tile)+'.png', dpi=300, bbox_inches='tight')
+      plt.savefig(ares[k].split(os.sep)[-1].split('.mat')[0]+'cm.png', dpi=300, bbox_inches='tight')
       del fig; plt.close()
+	  	  
 
-      Cmaster += CM
+      #Cmaster += CM
 
-   p, r, f = get_stats(Cmaster)	  	  
-   print('precision: %f' %(p))
-   print('recall: %f' %(r))
-   print('f-score: %f' %(f))
-	  
-   fig = plt.figure()
-   ax1 = fig.add_subplot(221)
-   plot_confusion_matrix2(Cmaster, classes=alabs, normalize=True, cmap=plt.cm.Reds)
-   plt.savefig('cm.png', dpi=300, bbox_inches='tight')
-   del fig; plt.close()
+   #p, r, f = get_stats(Cmaster)	  	  
+   #print('precision: %f' %(p))
+   #print('recall: %f' %(r))
+   #print('f-score: %f' %(f))
 
 

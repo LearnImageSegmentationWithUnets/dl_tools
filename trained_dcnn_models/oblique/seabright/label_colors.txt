@@ -1,7 +1,0 @@
-r
-w
-gray
-y
-#D2691E
-g
-b

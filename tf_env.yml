@@ -1,0 +1,21 @@
+name: dl_tools
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.5
+  - pydensecrf
+  - cython
+  - numpy
+  - scipy
+  - matplotlib
+  - scikit-image
+  - scikit-learn
+  - joblib
+  - tensorflow
+  - opencv
+  - ipython
+  - tensorflow
+  - tensorflow-hub
+  - jupyter
+  - tqdm
