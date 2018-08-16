@@ -8,7 +8,7 @@
 from __future__ import division
 
 import sys, getopt, os
-import socket, time
+import time #socket, 
 
 if sys.version[0]=='3':
    from tkinter import Tk, Toplevel 
@@ -218,7 +218,7 @@ if __name__ == '__main__':
    labels_path = askopenfilename(filetypes=[("pick a labels file","*.txt")], multiple=False)  
    colors_path = askopenfilename(filetypes=[("pick a label colors file","*.txt")], multiple=False)  
    
-   hostname = socket.gethostname()
+   #hostname = socket.gethostname()
 
    name, ext = os.path.splitext(image_path)
    name = name.split(os.sep)[-1]   
@@ -349,7 +349,7 @@ if __name__ == '__main__':
    
    resr = median(resr, disk(5))
    
-   savemat(image_path.split('.')[0]+'_mres_'+hostname+'.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
+   savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
 
    Lcorig = Lcr.copy().astype('float')
    Lcorig[Lcorig<1] = np.nan
@@ -396,7 +396,7 @@ if __name__ == '__main__':
    cb.set_ticks(0.5+np.arange(len(labels)+1))
    cb.ax.set_yticklabels(labels)
    cb.ax.tick_params(labelsize=4)
-   plt.savefig(name+'_mres_'+hostname+'.png', dpi=600, bbox_inches='tight')
+   plt.savefig(name+'_mres.png', dpi=600, bbox_inches='tight')
    del fig; plt.close()
    
    #=============================================   
