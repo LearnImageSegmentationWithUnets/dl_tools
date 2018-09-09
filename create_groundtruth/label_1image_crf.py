@@ -8,7 +8,7 @@
 from __future__ import division
 
 import sys, getopt, os
-import time #socket, 
+import time, socket 
 
 if sys.version[0]=='3':
    from tkinter import Tk, Toplevel 
@@ -235,6 +235,7 @@ if __name__ == '__main__':
    lw = 5 #initial brush thickness
    print("initial brush width = "+str(lw))
    print("change using the +/- keys")
+   print("cycle classes with [ESC]")
    
    theta=60
    compat_col=100 
@@ -408,7 +409,7 @@ if __name__ == '__main__':
    print("Processing took "+ str(elapsed/60) + "minutes")
    
    # write report
-   file = open(name+'_report_'+hostname+'.txt','w') 
+   file = open(name+'_report_'+socket.gethostname()+'.txt','w') 
    file.write('Image: '+image_path+'\n')
    counter = 0
    for label in labels:
