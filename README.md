@@ -15,13 +15,35 @@ Thanks: Jenna Brown, Paul Grams, Leslie Hsu, Andy Ritchie, Chris Sherwood, Rich 
 
 ## Installation
 
+Open an anaconda terminal and clone this repository from github
+
 ```
-conda env create -f tf_env.yml  
+git clone https://github.com/dbuscombe-usgs/dl_tools.git
+```
+
+![picture1](https://user-images.githubusercontent.com/3596509/45270458-4cea8500-b463-11e8-966c-04119bb8aba4.png)
+
+```
+conda env create -f tf_env.yml 
+```
+
+![picture2](https://user-images.githubusercontent.com/3596509/45270459-4cea8500-b463-11e8-86ae-679cd6993f41.png)
+
+
+You can see that this has been created in your conda env folder, e.g.
+
+![picture3](https://user-images.githubusercontent.com/3596509/45270460-4cea8500-b463-11e8-8ed7-384291da917f.png)
+
+``` 
 conda activate dl_tools
 ```
 
+![picture4](https://user-images.githubusercontent.com/3596509/45270461-4d831b80-b463-11e8-8c29-83d44a731480.png)
+
 
 ## 1) Create test an training data sets
+
+This function is designed to take a folder of images and create a new set of testing and training images based on a specified proportional split. Training images will be used to train a model. Testing images will be used to test that model. 
 
 ```
 python create_library\images_split_train_test.py -p 0.5
