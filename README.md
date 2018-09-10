@@ -40,6 +40,7 @@ conda activate dl_tools
 
 ![picture4](https://user-images.githubusercontent.com/3596509/45270461-4d831b80-b463-11e8-8c29-83d44a731480.png)
 
+# METHOD 1
 
 ## 1) Create test an training data sets
 
@@ -115,6 +116,8 @@ python eval_semseg\test_pixels.py
 * The program assumes the manual files have the string 'mres' in the filename, and that the automated files have the string 'ares' in the file name
 * For each pair of files, the program will compute accuracy metrics and print them to screen. A confusion matrix will also be printed to file
 
+
+# METHOD 2
 
 ## 8) Fully convolutional semantic segmentation, implementing the method of [Long et al 2015](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) 
 
