@@ -1,0 +1,6 @@
+sediment
+road
+wood
+terrain
+veg
+water

@@ -2,12 +2,12 @@ from __future__ import division
 import rasterio
 from scipy.ndimage import zoom
 import numpy as np
-import pyproj
+#import pyproj
 from imageio import imwrite
 
-## conda install rasterio pyproj
+from osgeo import gdal,ogr,osr
 
-###C:\Users\ddb265\github_clones\ms_backscatter_comp\20160331_Bedford\Bedford16_StaticSurface.tif
+## conda install rasterio gdal
 
 ##-------------------------------------------------------------
 def read_geotiff(input, gridres):

@@ -1,0 +1,6 @@
+y
+gray
+#FFF5EE
+#D2691E
+g
+b
