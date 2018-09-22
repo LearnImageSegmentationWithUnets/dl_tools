@@ -42,6 +42,8 @@ conda activate dl_tools
 
 # METHOD 1
 
+![](dl_tools.png)
+
 ## 1) Create test an training data sets
 
 This function is designed to take a folder of images and create a new set of testing and training images based on a specified proportional split. Training images will be used to train a model. Testing images will be used to test that model. 
@@ -118,6 +120,8 @@ python eval_semseg\test_pixels.py
 
 
 # METHOD 2
+
+![](dl_tools_fullyconv.png)
 
 ## 8) Fully convolutional semantic segmentation, implementing the method of [Long et al 2015](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) 
 

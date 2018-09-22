@@ -41,6 +41,7 @@ import os.path as path
 from skimage.filters.rank import median
 from skimage.morphology import disk
 
+from imageio import imwrite
 
 # =========================================================
 def norm_shape(shap):
@@ -417,4 +418,8 @@ if __name__ == '__main__':
       counter += 1	  
    file.write('Processing time (mins): '+str(elapsed/60)+'\n')   
    file.close()   
+   
+   #=============================================
+   imwrite(name+'_mres_label.png', np.round(255*(resr/np.max(resr))).astype('uint8'))
+   
    

@@ -257,17 +257,18 @@ if __name__ == '__main__':
    try:
       opts, args = getopt.getopt(argv,"h:w:s:")
    except getopt.GetoptError:
-      print('python int_seg_crf.py -w windowsize -s size')
+      print('python label_1geotiff_crf.py -w windowsize -s size')
       sys.exit(2)
 
    for opt, arg in opts:
       if opt == '-h':
-         print('Example usage: python int_seg_crf.py -w 400 -s 0.125')
+         print('Example usage: python label_1geotiff_crf.py -w 400 -s 0.125')
          sys.exit()
       elif opt in ("-w"):
          win = arg
       elif opt in ("-s"):
          fct = arg
+
 		 
    #===============================================
    # Run main application
@@ -410,7 +411,7 @@ if __name__ == '__main__':
    #b,g,r = cv2.split(im)       # get b,g,r
    #rgb_img = cv2.merge([r,g,b])     # switch it to rgb
    
-   nxo, nyo, nz = np.shape(rgb_img)
+   nxo, nyo, nz = np.shape(img)
    Lcr = Lcr[:nxo,:nyo] 
    resr = resr[:nxo,:nyo]    
    
@@ -439,7 +440,7 @@ if __name__ == '__main__':
    ax1.get_xaxis().set_visible(False)
    ax1.get_yaxis().set_visible(False)
 
-   _ = ax1.imshow(rgb_img)
+   _ = ax1.imshow(im)
    #plt.title('b) Unary potentials', loc='left', fontsize=6)
    im2 = ax1.imshow(Lcorig-1, cmap=cmap, alpha=0.5, vmin=0, vmax=len(labels))
    divider = make_axes_locatable(ax1)
@@ -454,7 +455,7 @@ if __name__ == '__main__':
    ax1.get_xaxis().set_visible(False)
    ax1.get_yaxis().set_visible(False)   
 
-   _ = ax1.imshow(rgb_img)
+   _ = ax1.imshow(im)
    #plt.title('c) CRF prediction', loc='left', fontsize=6)
    im2 = ax1.imshow(resr, cmap=cmap, alpha=0.5, vmin=0, vmax=len(labels))
    divider = make_axes_locatable(ax1)
