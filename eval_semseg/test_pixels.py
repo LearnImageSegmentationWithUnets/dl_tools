@@ -47,10 +47,12 @@ def get_stats(cm):
     fp = np.asarray(FP)
     fn = np.asarray(FN)    
         
-    p = tp/(tp+fp)
+    support = np.diag(cm)
+	
+    p = tp[support>0]/(tp[support>0]+fp[support>0])
     p[p==0] = np.nan
 
-    r = tp/(tp+fn)
+    r = tp[support>0]/(tp[support>0]+fn[support>0])
     r[r==0] = np.nan    
 
     p = np.nanmean(p)
@@ -75,7 +77,7 @@ def plot_confusion_matrix2(cm, classes, normalize=False, cmap=plt.cm.Blues, dola
     thresh = cm.max() / 2.
     if dolabels==True:
        tick_marks = np.arange(len(classes))
-       plt.xticks(tick_marks, classes, fontsize=3) # rotation=45
+       plt.xticks(tick_marks, classes, fontsize=3, rotation=45)
        plt.yticks(tick_marks, classes, fontsize=3)
 
        plt.ylabel('True label',fontsize=6)
@@ -119,11 +121,6 @@ if __name__ == '__main__':
    Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing   
    
    direc = askdirectory()	
-	
-   ##tile = 192 #96 #128 #160 #192 #224
-   ##direc='test'
-
-   ##tile = int(tile)
    
    mres = sorted(glob(direc+os.sep+'*mres*.mat'))
 
@@ -132,10 +129,13 @@ if __name__ == '__main__':
 
    for k in range(len(ares)):
       print("loading "+ares[k])
-      print("loading "+mres[k])
+	  
+      m = [m for m in mres if m.startswith(ares[k].split('_ares')[0])][0]
+	  
+      print("loading "+m)
 	  
       a = loadmat(ares[k])['class']
-      c = loadmat(mres[k])['class']
+      c = loadmat(m)['class']
 
       alabs = loadmat(ares[k])['labels']
       clabs = loadmat(mres[k])['labels']
@@ -145,21 +145,20 @@ if __name__ == '__main__':
       aind = [alabs.index(x) for x in alabs]
 
       if k==0:
-         Cmaster = np.zeros((len(alabs), len(alabs)))
+        Cmaster = np.zeros((len(alabs), len(alabs)))
 
       c2 = c.copy()
       for kk in range(len(aind)):
-         if cind[kk] != aind[kk]:
-            c2[c==cind[kk]] = aind[kk] 
+        if cind[kk] != aind[kk]:
+           c2[c==cind[kk]] = aind[kk] 
       del c
-
-      #e = precision_recall_fscore_support(a.flatten(), c2.flatten())
-      #p = np.mean(e[0])
-      #r = np.mean(e[1])
-      #f = np.mean(e[2])
    
       CM = confusion_matrix(a.flatten(), c2.flatten())
 
+      #CM = np.zeros((len(alabs), len(alabs)))
+      #for v1, v2 in zip(a.flatten(), c2.flatten()):
+      #   CM[v1][v2] += 1
+	  
       CM = np.asarray(CM)
 	  
       p, r, f = get_stats(CM)	  	  
@@ -170,7 +169,7 @@ if __name__ == '__main__':
       fig = plt.figure()
       ax1 = fig.add_subplot(221)
       plot_confusion_matrix2(CM, classes=alabs, normalize=True, cmap=plt.cm.Reds)
-      plt.savefig(ares[k].split(os.sep)[-1].split('.mat')[0]+'cm.png', dpi=300, bbox_inches='tight')
+      plt.savefig(os.path.dirname(ares[k])+os.sep+ares[k].split(os.sep)[-1].split('.mat')[0]+'cm.png', dpi=300, bbox_inches='tight')
       del fig; plt.close()
 	  	  
 

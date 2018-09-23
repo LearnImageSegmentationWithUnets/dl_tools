@@ -9,7 +9,7 @@ from __future__ import division
 from joblib import Parallel, delayed
 from glob import glob
 import numpy as np 
-from scipy.misc import imread
+from imageio import imread
 from scipy.io import loadmat
 import sys, getopt, os
 
@@ -93,9 +93,16 @@ if __name__ == '__main__':
    outpath = direc+os.sep+'tile_'+str(tile)
    ##files = sorted(glob(direc+os.sep+'*.mat'))
 
-   labels = loadmat(files[0])['labels']
-
-   labels = [label.replace(' ','') for label in labels]
+   print("Searching for labels in all %i files" % (len(files)))
+   L = []
+   for f in files:
+      dat = loadmat(files[0])
+      if 'labels' in dat.keys():
+         labels = dat['labels']
+         labels = [label.replace(' ','') for label in labels]
+         L.extend(labels)
+	
+   labels = np.unique(L).tolist()	
    #=======================================================
 
    #=======================================================
@@ -118,11 +125,11 @@ if __name__ == '__main__':
    
    #=======================================================
    for f in files:
-
+      print('Working on %s' % f)
       dat = loadmat(f)
-      labels = dat['labels']
-
-      labels = [label.replace(' ','') for label in labels]	  	  
+      if 'labels' in dat.keys():
+         labels = dat['labels']
+         labels = [label.replace(' ','') for label in labels]	  	  
 	  
       res = dat['class']
       del dat
