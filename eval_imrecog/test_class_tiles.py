@@ -161,9 +161,9 @@ def eval_tiles(label, direc, numero, classifier_file, x, n):
    P = np.asarray(P)
    
    ind = np.where(~np.isnan(C))[0]
-   C = C[ind]
+   C = C[ind]; P = P[ind]
    ind = np.where(~np.isnan(P))[0]
-   P = P[ind]
+   C = C[ind]; P = P[ind]
    
    e = precision_recall_fscore_support(np.ones(len(C))*x, C)
 
