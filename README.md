@@ -142,10 +142,12 @@ There are other python libraries you'll need to use it:
 To help speed your test up, twelve ground truth label files are provided in ```demo_data\gt```. Assuming you have executed Step 1 above, you may copy those files into the correct folder (```train``` or ```test```) using
 
 ```
-python create_library\cp_mat.py
+cd create_library
+python cp_mat.py
+cd ..
 ```	
 
-Now if you look inside ```test``` and ```train``` you will see 6 *.mat files per folder 
+Now if you look inside ```test``` and ```train``` you will see a few *.mat files per folder 
 	
 ---
 
@@ -191,10 +193,10 @@ Example: labels.txt
 * ```--output_graph ``` Name of the ".pb" (tensorflow graph) output file
 Example: monterey_demo_mobilenetv2_96_1000_001.pb 
 
-* ```--bottleneck_dir ``` This is the name of a temporary directory that the program uses
+* ```--bottleneck_dir ``` This is the name of a temporary directory that the program uses that contains 'bottleneck' files. These are ascii files containing feature vectors for each image. The program stores these as files so, if training is interrupted, it can pick up where it left off upon reinitialization
 Example: bottlenecks 
 
-* ```--summaries_dir ``` This is the name of a temporary directory that the program uses
+* ```--summaries_dir ``` This is the name of a temporary directory that the program uses that stores information about the model training
 Example: summaries
 
 
@@ -208,6 +210,14 @@ python train_dcnn_tfhub\retrain.py --image_dir demo_data\train\tile_96 --tfhub_m
 
 
 * Note that this model takes a very long time to train. If you want to skip this step for now, you can download the model [here](https://drive.google.com/open?id=1o8GNz8XX_AxVdDLf_Y3NWbfG436qvUT5) and the associated labels file [here](https://drive.google.com/open?id=1XYkpKZmu1jZsQX72b_FlxKyvMyOxqn5O)
+
+* When training is complete, you may look at the model training accuracy and cost function as a function of iteration number, using [tensorboard](https://www.tensorflow.org/guide/summaries_and_tensorboard). You can invoke this by issuing the following (from the ```dl_tools``` root directory) in the Anaconda command window:
+
+```
+tensorboard --logdir=summaries
+```
+
+Then you can view training and validation data in your browser (localhost) using the url that is specified.
 
 ---
 

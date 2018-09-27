@@ -53,7 +53,7 @@ def read_geotiff(image_path):
    This function reads image in GeoTIFF format.
    """
 
-   print('Reading GeoTIFF data ...')
+   ##print('Reading GeoTIFF data ...')
    if type(image_path) is not list:
       input = [image_path]
 
@@ -162,6 +162,9 @@ def sliding_window(a,ws,ss = None,flatten = True):
 # =========================================================
 def getCRF_justcol(img, Lc, theta, n_iter, label_lines, compat_col=40, scale=5, prob=0.5):
 
+      if np.ndim(img)==2:
+         img = np.dstack((img, img, img))
+	     
       H = img.shape[0]
       W = img.shape[1]
 
@@ -223,31 +226,38 @@ def anno_draw(event,former_x,former_y,flags,param):
 
 
 #==============================================================================
-#==============================================================================
-def get_img(image_path, fct):
-   img = cv2.imread(image_path)
-   if fct<1:
-      img = cv2.resize(img, (0,0), fx=fct, fy=fct) 
+# #==============================================================================
+# def get_img(image_path, fct):
+   # img = cv2.imread(image_path)
+   # if fct<1:
+      # img = cv2.resize(img, (0,0), fx=fct, fy=fct) 
 
-   img[img==0] = 1
-   img[img==255] = 254
+   # img[img==0] = 1
+   # img[img==255] = 254
 
-   nxo, nyo, nz = np.shape(img)
-   # pad image so it is divisible by N windows with no remainder
-   return np.pad(img, [(0,win-np.mod(nxo,win)), (0,win-np.mod(nyo,win)), (0,0)], mode='constant')
+   # nxo, nyo, nz = np.shape(img)
+   # # pad image so it is divisible by N windows with no remainder
+   # return np.pad(img, [(0,win-np.mod(nxo,win)), (0,win-np.mod(nyo,win)), (0,0)], mode='constant')
 
    
 #==============================================================================
 def resize_img(img, fct):
-   if fct<1:
-      img = cv2.resize(img, (0,0), fx=fct, fy=fct) 
+   #if fct<1:
+   img = cv2.resize(img, (0,0), fx=fct, fy=fct) 
 
+   img = np.dstack((img, img, img))
+   
    img[img==0] = 1
    img[img==255] = 254
-
-   nxo, nyo, nz = np.shape(img)
    # pad image so it is divisible by N windows with no remainder
-   return np.pad(img, [(0,win-np.mod(nxo,win)), (0,win-np.mod(nyo,win)), (0,0)], mode='constant')
+
+   if np.ndim(img)==3:
+      nxo, nyo, nz = np.shape(img)
+      pimg = np.pad(img, [(0,win-np.mod(nxo,win)), (0,win-np.mod(nyo,win)), (0,0)], mode='constant')
+   else:
+      nxo, nyo = np.shape(img)
+      pimg = np.pad(img, [(0,win-np.mod(nxo,win)), (0,win-np.mod(nyo,win))], mode='constant')
+   return pimg
 
    
 #==============================================================
@@ -323,9 +333,13 @@ if __name__ == '__main__':
    img = resize_img(img, fct)
    #img = get_img(image_path, fct)
    
-   nx, ny, nz = np.shape(img)
+   if np.ndim(img)==3:   
+      nx, ny, nz = np.shape(img)
+      Z,ind = sliding_window(img, (win, win,3), (win, win,3))	  
+   else:
+      nx, ny = np.shape(img)   
+      Z,ind = sliding_window(img, (win, win), (win, win))
 
-   Z,ind = sliding_window(img, (win, win,3), (win, win,3))
    gridy, gridx = np.meshgrid(np.arange(ny), np.arange(nx))
 
    Zx,_ = sliding_window(gridx, (win, win), (win, win))
@@ -334,7 +348,10 @@ if __name__ == '__main__':
    out = np.zeros((nx,ny))    
 			
    for ck in range(len(Z)):
-      img = get_img(image_path, fct)
+      #img = get_img(image_path, fct)
+      img, bs = read_geotiff(image_path)
+      img = resize_img(img, fct)	  
+	  
       cv2.rectangle(img, (np.min(Zy[ck]), np.min(Zx[ck])), (np.max(Zy[ck]), np.max(Zx[ck])), (255,0,0), 2)	  
       cv2.namedWindow('whole image')			
       cv2.imshow('whole image',img)
@@ -358,7 +375,11 @@ if __name__ == '__main__':
                   im = imcopy.copy()
                   imcopy = im.copy()				  
                if k==27:
-                  im[im[:,:,2]==255] = counter
+                  try:		   
+                     im[im[:,:,2]==255] = counter
+                  except:
+                     im[im==255] = counter
+				  
                   counter += 1
                   break
                #plus = 43
@@ -373,13 +394,21 @@ if __name__ == '__main__':
                   print("brush width = "+str(lw))			  
             cv2.destroyWindow(label) #destroyAllWindows()
 
-         Lc = im[:,:,2]
+         try:
+            Lc = im[:,:,2]
+         except:
+            Lc = im[:,:]
+			
          Lc[Lc>=counter] = 0
 
          out[Zx[ck],Zy[ck]] = Lc
 		 		 
       else:
-         Lc = np.zeros(np.shape(im[:,:,2]))
+         try:	  
+            Lc = np.zeros(np.shape(im[:,:,2]))
+         except:		 
+            Lc = np.zeros(np.shape(im))
+         
          out[Zx[ck],Zy[ck]] = Lc
 		 
       cv2.destroyWindow('whole image')
@@ -391,7 +420,11 @@ if __name__ == '__main__':
    img, bs = read_geotiff(image_path)
    #img = resize_img(img, fct)   
    
-   nxo, nyo, nz = np.shape(img)
+   try:
+      nxo, nyo, nz = np.shape(img)
+   except:
+      nxo, nyo = np.shape(img)
+   
 
    Lc = out[:nxo,:nyo] 
 
@@ -411,7 +444,11 @@ if __name__ == '__main__':
    #b,g,r = cv2.split(im)       # get b,g,r
    #rgb_img = cv2.merge([r,g,b])     # switch it to rgb
    
-   nxo, nyo, nz = np.shape(img)
+   try:
+      nxo, nyo, nz = np.shape(img)
+   except:
+      nxo, nyo = np.shape(img)   
+   
    Lcr = Lcr[:nxo,:nyo] 
    resr = resr[:nxo,:nyo]    
    
@@ -486,10 +523,14 @@ if __name__ == '__main__':
    file.close()   
   
    #==========================================================
-   epsg = int(bs[0]['crs']['init'].split('epsg:')[-1])
+   try:
+      epsg = int(bs[0]['crs']['init'].split('epsg:')[-1])
+      proj = osr.SpatialReference()
+      proj.ImportFromEPSG(epsg) 	  
+   except:
+      d = gdal.Open(image_path)
+      proj = osr.SpatialReference(wkt=d.GetProjection())  
 
-   proj = osr.SpatialReference()
-   proj.ImportFromEPSG(epsg) 
    datout = np.squeeze(np.ma.filled(1+resr.copy()))
 
    datout[np.isnan(datout)] = 0
