@@ -238,8 +238,8 @@ if __name__ == '__main__':
    print("change using the +/- keys")
    print("cycle classes with [ESC]")
    
-   theta=60
-   compat_col=100 
+   theta=60 #"nearness" tolerance
+   compat_col=100 #"intensity" tolerance
    scale=1
    n_iter=30
 

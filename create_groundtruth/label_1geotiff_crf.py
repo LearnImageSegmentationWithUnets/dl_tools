@@ -245,7 +245,8 @@ def resize_img(img, fct):
    #if fct<1:
    img = cv2.resize(img, (0,0), fx=fct, fy=fct) 
 
-   img = np.dstack((img, img, img))
+   if np.ndim(img)==2:
+      img = np.dstack((img, img, img))
    
    img[img==0] = 1
    img[img==255] = 254
