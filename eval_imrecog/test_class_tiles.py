@@ -150,12 +150,21 @@ def eval_tiles(label, direc, numero, classifier_file, x, n):
    for i in range(len(Z)):
       w1.append(getCP(Z[i], graph))
 
-   C, P, _ = zip(*w1) 
+   try:
+      C, P, _ = zip(*w1) 
+   except:
+      C = np.nan
+      P = np.nan
    del w1, Z
 
    C = np.asarray(C)
    P = np.asarray(P)
-
+   
+   ind = np.where(~np.isnan(C))[0]
+   C = C[ind]
+   ind = np.where(~np.isnan(P))[0]
+   P = P[ind]
+   
    e = precision_recall_fscore_support(np.ones(len(C))*x, C)
 
    cm = np.zeros((n,n))
