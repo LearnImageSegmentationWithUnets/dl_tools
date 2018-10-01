@@ -6,17 +6,26 @@ Written by Dr Daniel Buscombe
 Northern Arizona University
 daniel.buscombe@nau.edu
 
+## Credits
+
 Imagery in ```demo_data``` collected by Jon Warrick, USGS Santa Cruz
 
 This toolbox was prepared for the "MAPPING LAND-USE, HAZARD VULNERABILITY AND HABITAT SUITABILITY USING DEEP NEURAL NETWORKS" project, funded by the U.S. Geological Survey Community for Data Integration, 2018
 
-Thanks: Jenna Brown, Paul Grams, Leslie Hsu, Andy Ritchie, Chris Sherwood, Rich Signell, Jon Warrick
+Thanks: Jenna Brown, Paul Grams, Leslie Hsu, Andy Ritchie, Chris Sherwood, Rich Signell, Jon Warrick, and all of those who attended two CDI Deep Learning workshops in summer 2018
+
+## Please cite
+If you find these tools useful for your work, please cite the following paper:
+
+> Buscombe, D., and Ritchie, A.C. 2018. Landscape Classification with Deep Neural Networks. Geosciences 8 (7)  https://doi.org/10.3390/geosciences8070244
+
+in which you'll also find more details about the algorithms and workflows used in this toolbox
 
 ---
 
 ## Installation
 
-Open an anaconda terminal and clone this repository from github
+> Open an anaconda terminal and clone this repository from github
 
 ```
 git clone https://github.com/dbuscombe-usgs/dl_tools.git
@@ -31,7 +40,7 @@ conda env create -f tf_env.yml
 ![picture2](https://user-images.githubusercontent.com/3596509/45270459-4cea8500-b463-11e8-86ae-679cd6993f41.png)
 
 
-You can see that this has been created in your conda env folder, e.g.
+> You can see that this has been created in your conda env folder, e.g.
 
 ![picture3](https://user-images.githubusercontent.com/3596509/45270460-4cea8500-b463-11e8-8ed7-384291da917f.png)
 
@@ -45,7 +54,7 @@ conda activate dl_tools
 
 ## Data
 
-The provided example dataset is organized as follows
+> The provided example dataset is organized as follows
 
 ![dl_tools_data](https://user-images.githubusercontent.com/3596509/45930729-8964b900-bf18-11e8-897f-57658acbe14d.png)
 
@@ -60,7 +69,7 @@ The provided example dataset is organized as follows
 
 ## 1) Create test an training data sets
 
-This function is designed to take a folder of images and create a new set of testing and training images based on a specified proportional split. Training images will be used to train a model. Testing images will be used to test that model. 
+> This function is designed to take a folder of images and create a new set of testing and training images based on a specified proportional split. Training images will be used to train a model. Testing images will be used to test that model. 
 
 ```
 python create_library\images_split_train_test.py -p 0.5
@@ -83,7 +92,7 @@ python create_library\images_split_train_test.py -p 0.5
 python create_groundtruth\label_1image_crf.py -w 500 -s 0.2
 ```
 
-which says I will be using a 500x500 pixel window of the image at any one time, and the image will be rescaled to 20% of its original size to do the CRF processing (for speed)
+> which says I will be using a 500x500 pixel window of the image at any one time, and the image will be rescaled to 20% of its original size to do the CRF processing (for speed)
 
 * Select an image (you can only work on one image at a time). Currently, JPG, jpg, jpeg, png, PNG, tif, tiff, TIF and TIFF extensions supported
 
@@ -116,7 +125,7 @@ which says I will be using a 500x500 pixel window of the image at any one time, 
 
 ![generating](https://user-images.githubusercontent.com/3596509/45930830-9fbf4480-bf19-11e8-9736-7fc65898ba6c.png)
 
-CRF inference time depends primarily on image complexity and size, but is also secondarily affected by the number and spatial heterogeneity of the class labels.
+> CRF inference time depends primarily on image complexity and size, but is also secondarily affected by the number and spatial heterogeneity of the class labels.
 
 * After a couple of minutes, the labeling is complete. In the same folder as the image (and labels), you should see 4 new files
 
@@ -132,14 +141,14 @@ CRF inference time depends primarily on image complexity and size, but is also s
 python create_groundtruth\label_1geotiff_crf.py -w 500 -s 1.0
 ```
 
-There are other python libraries you'll need to use it:
+> There are other python libraries you'll need to use it:
 
 ```conda install rasterio gdal```
 	
 ---	
 	
 [Optional] 
-To help speed your test up, twelve ground truth label files are provided in ```demo_data\gt```. Assuming you have executed Step 1 above, you may copy those files into the correct folder (```train``` or ```test```) using
+> To help speed your test up, twelve ground truth label files are provided in ```demo_data\gt```. Assuming you have executed Step 1 above, you may copy those files into the correct folder (```train``` or ```test```) using
 
 ```
 cd create_library
@@ -147,7 +156,7 @@ python cp_mat.py
 cd ..
 ```	
 
-Now if you look inside ```test``` and ```train``` you will see a few *.mat files per folder 
+> Now if you look inside ```test``` and ```train``` you will see a few *.mat files per folder 
 	
 ---
 
@@ -217,13 +226,13 @@ python train_dcnn_tfhub\retrain.py --image_dir demo_data\train\tile_96 --tfhub_m
 tensorboard --logdir=summaries
 ```
 
-Then you can view training and validation data in your browser (localhost) using the url that is specified.
+> Then you can view training and validation data in your browser (localhost) using the url that is specified.
 
 ---
 
 ## 5) Evaluate image tile classification accuracy
 
-This script evaluates how well the retrained DCNN performs at an 'image recognition' task (could be whole images, or tiles like this example)
+> This script evaluates how well the retrained DCNN performs at an 'image recognition' task (could be whole images, or tiles like this example)
 
 ```
 python eval_imrecog\test_class_tiles.py -n 100
@@ -306,7 +315,7 @@ python eval_semseg\test_pixels.py
 
 # METHOD 2
 
-This method is designed to predict pixelwise labels without training on tiles (i.e. it uses pixelwise label images directly to train the model and infer classes on unseen imagery)
+> This method is designed to predict pixelwise labels without training on tiles (i.e. it uses pixelwise label images directly to train the model and infer classes on unseen imagery)
 
 ![](dl_tools_fullyconv.png)
 
