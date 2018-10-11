@@ -1,0 +1,10 @@
+__pycache__/
+bottlenecks/
+data/
+demo_data/test/
+demo_data/train/
+labels.txt
+*.pb
+summaries/
+summaries_cpu/
+tile_utils.py
