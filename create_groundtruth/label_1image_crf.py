@@ -199,12 +199,12 @@ if __name__ == '__main__':
    try:
       opts, args = getopt.getopt(argv,"h:w:s:")
    except getopt.GetoptError:
-      print('python int_seg_crf.py -w windowsize -s size')
+      print('python label_1image.py -w windowsize -s size')
       sys.exit(2)
 
    for opt, arg in opts:
       if opt == '-h':
-         print('Example usage: python int_seg_crf.py -w 400 -s 0.125')
+         print('Example usage: python label_1image.py -w 400 -s 0.125')
          sys.exit()
       elif opt in ("-w"):
          win = arg
@@ -344,14 +344,6 @@ if __name__ == '__main__':
    
 
    #===========================================================================================================
-   #Check to see which classes were manually notated 
-   max_class = len(labels)
-   xx =np.unique(Lc[Lc >0]-1).astype(int)
-   labels = [labels[i] for i in xx]
-   classes = {k: classes[k] for k in labels}
-   cmap1 = [cmap1[i] for i in xx]
-   cmap = colors.ListedColormap(cmap1)  
-   #===========================================================================================================
       
    print('Generating dense scene from sparse labels ....')
    res,p = getCRF_justcol(rgb_img, Lc.astype('int'), theta, n_iter, classes, compat_col, scale)
@@ -370,32 +362,9 @@ if __name__ == '__main__':
    Lcorig = Lcr.copy().astype('float')
    
    
-   #===============================================================
-   #Update Lcorig and resr for proper plotting
-   #Need to adjust the classificaitons such that they are sequentually ordered
-   #to ensure the proper color mapping from cmap
-   #====================================================================
-   if max_class>len(np.unique(Lcr[Lcr>0])):    
-   
-       #find labels used in manaul annotation
-       xx =np.unique(Lcr[Lcr >0]).astype(int)
-       #find Missing labels
-       all_labels = np.arange(max_class)+1
-       missing_label = all_labels[~np.isin(all_labels,xx)]       
-       
-       #loop through and substract calssificaitno value to 
-       for x in np.nditer(-np.sort(-missing_label)):   
-           Lcorig[Lcorig>x]-=1
-           
-       #change to zero based classes
-       missing_label -=1
-       #loop through CRF predicaitons to adjust for non sequental labels
-       for x in np.nditer(-np.sort(-missing_label)):   
-           resr[resr>x]-=1
-   #===================================================================
-      
    Lcorig[Lcorig<1] = np.nan  
        
+   savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
 
 
    #=============================================   
@@ -439,7 +408,7 @@ if __name__ == '__main__':
    cb.set_ticks(0.5+np.arange(len(labels)+1))
    cb.ax.set_yticklabels(labels)
    cb.ax.tick_params(labelsize=4)
-   plt.savefig(name+'_mres.png', dpi=600, bbox_inches='tight')
+   plt.savefig(name+'_mres.png', dpi=600)#, bbox_inches='tight')
    del fig; plt.close()
    
    #=============================================   
