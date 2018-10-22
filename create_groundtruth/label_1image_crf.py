@@ -199,12 +199,12 @@ if __name__ == '__main__':
    try:
       opts, args = getopt.getopt(argv,"h:w:s:")
    except getopt.GetoptError:
-      print('python int_seg_crf.py -w windowsize -s size')
+      print('python label_1image.py -w windowsize -s size')
       sys.exit(2)
 
    for opt, arg in opts:
       if opt == '-h':
-         print('Example usage: python int_seg_crf.py -w 400 -s 0.125')
+         print('Example usage: python label_1image.py -w 400 -s 0.125')
          sys.exit()
       elif opt in ("-w"):
          win = arg
@@ -215,10 +215,13 @@ if __name__ == '__main__':
    # Run main application
    Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing   
    image_path = askopenfilename(filetypes=[("pick an image file","*.JPG *.jpg *.jpeg *.JPEG *.png *.PNG *.tif *.tiff *.TIF *.TIFF")], multiple=False)  
-
+   
    labels_path = askopenfilename(filetypes=[("pick a labels file","*.txt")], multiple=False)  
    colors_path = askopenfilename(filetypes=[("pick a label colors file","*.txt")], multiple=False)  
    
+#   image_path = r"C:\workspace\git_clones\dl_tools\data\test\rlc11412021250.jpg"
+#   labels_path=r"C:\workspace\git_clones\dl_tools\labels.txt"
+#   colors_path=r"C:\workspace\git_clones\dl_tools\label_colors.txt"
    #hostname = socket.gethostname()
 
    name, ext = os.path.splitext(image_path)
@@ -232,7 +235,9 @@ if __name__ == '__main__':
       
    win = int(win) ##1000
    fct = float(fct) ##1000
-
+   
+#   win = int(512)
+#   fct= float(1)
    lw = 5 #initial brush thickness
    print("initial brush width = "+str(lw))
    print("change using the +/- keys")
@@ -246,7 +251,9 @@ if __name__ == '__main__':
    with open(labels_path) as f: #'labels.txt') as f:
       labels = f.readlines()
    labels = [x.strip() for x in labels] 
-
+   
+   
+   
    with open(colors_path) as f: #'labels.txt') as f:
       cols = f.readlines()
    cmap1 = [x.strip() for x in cols] 
@@ -286,7 +293,7 @@ if __name__ == '__main__':
             imcopy = im.copy()		    
             conf = 0
             #=============================
-            cv2.namedWindow(label) #+' ('+str(ck+1)+'/'+str(len(Z))+')')#, cv2.WND_PROP_FULLSCREEN) 
+            cv2.namedWindow(label,cv2.WINDOW_NORMAL) #+' ('+str(ck+1)+'/'+str(len(Z))+')')#, cv2.WND_PROP_FULLSCREEN) 
             cv2.moveWindow(label, 0,0)  # Move it to (0,0)
             #cv2.setWindowProperty(label, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             cv2.setMouseCallback(label,anno_draw)
@@ -334,7 +341,10 @@ if __name__ == '__main__':
    
    b,g,r = cv2.split(im)       # get b,g,r
    rgb_img = cv2.merge([r,g,b])     # switch it to rgb
+   
 
+   #===========================================================================================================
+      
    print('Generating dense scene from sparse labels ....')
    res,p = getCRF_justcol(rgb_img, Lc.astype('int'), theta, n_iter, classes, compat_col, scale)
 
@@ -348,14 +358,14 @@ if __name__ == '__main__':
    nxo, nyo, nz = np.shape(rgb_img)
    Lcr = Lcr[:nxo,:nyo] 
    resr = resr[:nxo,:nyo]    
-   
    resr = median(resr, disk(5))
+   Lcorig = Lcr.copy().astype('float')
    
+   
+   Lcorig[Lcorig<1] = np.nan  
+       
    savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
 
-   Lcorig = Lcr.copy().astype('float')
-   Lcorig[Lcorig<1] = np.nan
-   
 
    #=============================================   
    #=============================================
@@ -376,7 +386,7 @@ if __name__ == '__main__':
 
    _ = ax1.imshow(rgb_img)
    #plt.title('b) Unary potentials', loc='left', fontsize=6)
-   im2 = ax1.imshow(Lcorig-1, cmap=cmap, alpha=0.5, vmin=0, vmax=len(labels))
+   im2 = ax1.imshow(Lcorig-1, cmap=cmap, alpha=0.5, vmin=0, vmax=len(cmap1))
    divider = make_axes_locatable(ax1)
    cax = divider.append_axes("right", size="5%")
    cb=plt.colorbar(im2, cax=cax)
@@ -398,7 +408,7 @@ if __name__ == '__main__':
    cb.set_ticks(0.5+np.arange(len(labels)+1))
    cb.ax.set_yticklabels(labels)
    cb.ax.tick_params(labelsize=4)
-   plt.savefig(name+'_mres.png', dpi=600, bbox_inches='tight')
+   plt.savefig(name+'_mres.png', dpi=600)#, bbox_inches='tight')
    del fig; plt.close()
    
    #=============================================   

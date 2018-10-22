@@ -5,6 +5,9 @@
 #python script to carry out quick semi-supervised segmentation of a single image
 #uses manual labeling of regions of image as unary potentials for a fully-connected conditional random field
 
+## FIX: get_crs issue (random)
+## FIX: shape errors in CRF (Corina data) - related to resizing?
+
 from __future__ import division
 
 import sys, getopt, os
@@ -242,6 +245,13 @@ def anno_draw(event,former_x,former_y,flags,param):
    
 #==============================================================================
 def resize_img(img, fct):
+
+   if np.ndim(img)==2:
+      nxo, nyo = np.shape(img)
+      nzo = 0
+   else:
+      nxo, nyo, nzo = np.shape(img)
+   
    #if fct<1:
    img = cv2.resize(img, (0,0), fx=fct, fy=fct) 
 
@@ -258,7 +268,7 @@ def resize_img(img, fct):
    else:
       nxo, nyo = np.shape(img)
       pimg = np.pad(img, [(0,win-np.mod(nxo,win)), (0,win-np.mod(nyo,win))], mode='constant')
-   return pimg
+   return pimg, nxo, nyo, nzo
 
    
 #==============================================================
@@ -331,7 +341,13 @@ if __name__ == '__main__':
    mode=True # if True, draw rectangle. Press 'm' to toggle to curve
 
    img, bs = read_geotiff(image_path)
-   img = resize_img(img, fct)
+   
+   if np.ndim(img)==3:
+      xorig, yorig, zorig = np.shape(img)
+   else:
+      xorig, yorig = np.shape(img)
+   
+   img, nxo, nyo, nzo = resize_img(img, fct)
    #img = get_img(image_path, fct)
    
    if np.ndim(img)==3:   
@@ -416,15 +432,12 @@ if __name__ == '__main__':
 
 			
    #==========================
-   #img = get_img(image_path, fct) 
-
-   img, bs = read_geotiff(image_path)
    #img = resize_img(img, fct)   
    
-   try:
-      nxo, nyo, nz = np.shape(img)
-   except:
-      nxo, nyo = np.shape(img)
+   #try:
+   #   nxo, nyo, nz = np.shape(img)
+   #except:
+   #   nxo, nyo = np.shape(img)
    
 
    Lc = out[:nxo,:nyo] 
@@ -438,13 +451,17 @@ if __name__ == '__main__':
    print('Generating dense scene from sparse labels ....')
    res,p = getCRF_justcol(im, Lc.astype('int'), theta, n_iter, classes, compat_col, scale)
 
-   resr = np.round(imresize(res, 1/fct, interp='nearest')/255 * np.max(res)).astype('int')
-   Lcr = np.round(imresize(Lc, 1/fct, interp='nearest')/255 * np.max(Lc)).astype('int')
+   resr = np.round(imresize(res, (xorig, yorig, zorig), interp='nearest')/255 * np.max(res)).astype('int')
+   Lcr = np.round(imresize(Lc, (xorig, yorig, zorig), interp='nearest')/255 * np.max(Lc)).astype('int') #1/fct
 
    #im = cv2.imread(image_path)   
    #b,g,r = cv2.split(im)       # get b,g,r
    #rgb_img = cv2.merge([r,g,b])     # switch it to rgb
    
+   ##img = get_img(image_path, fct) 
+
+   img, bs = read_geotiff(image_path)
+
    try:
       nxo, nyo, nz = np.shape(img)
    except:
@@ -470,7 +487,7 @@ if __name__ == '__main__':
    ax1.get_xaxis().set_visible(False)
    ax1.get_yaxis().set_visible(False)
 
-   _ = ax1.imshow(im)
+   _ = ax1.imshow(img)
    #plt.title('a) Input', loc='left', fontsize=6)
 
    #=============================   
@@ -478,7 +495,7 @@ if __name__ == '__main__':
    ax1.get_xaxis().set_visible(False)
    ax1.get_yaxis().set_visible(False)
 
-   _ = ax1.imshow(im)
+   _ = ax1.imshow(img)
    #plt.title('b) Unary potentials', loc='left', fontsize=6)
    im2 = ax1.imshow(Lcorig-1, cmap=cmap, alpha=0.5, vmin=0, vmax=len(labels))
    divider = make_axes_locatable(ax1)
@@ -493,7 +510,7 @@ if __name__ == '__main__':
    ax1.get_xaxis().set_visible(False)
    ax1.get_yaxis().set_visible(False)   
 
-   _ = ax1.imshow(im)
+   _ = ax1.imshow(img)
    #plt.title('c) CRF prediction', loc='left', fontsize=6)
    im2 = ax1.imshow(resr, cmap=cmap, alpha=0.5, vmin=0, vmax=len(labels))
    divider = make_axes_locatable(ax1)
