@@ -219,9 +219,9 @@ if __name__ == '__main__':
    labels_path = askopenfilename(filetypes=[("pick a labels file","*.txt")], multiple=False)  
    colors_path = askopenfilename(filetypes=[("pick a label colors file","*.txt")], multiple=False)  
    
-#   image_path = r"C:\workspace\git_clones\dl_tools\data\test\rlc11412021250.jpg"
-#   labels_path=r"C:\workspace\git_clones\dl_tools\labels.txt"
-#   colors_path=r"C:\workspace\git_clones\dl_tools\label_colors.txt"
+   #image_path = r"C:\workspace\git_clones\dl_tools\data\test\rlc11412021250.jpg"
+   #labels_path=r"C:\workspace\git_clones\dl_tools\labels.txt"
+   #colors_path=r"C:\workspace\git_clones\dl_tools\label_colors.txt"
    #hostname = socket.gethostname()
 
    name, ext = os.path.splitext(image_path)
@@ -344,7 +344,16 @@ if __name__ == '__main__':
    
 
    #===========================================================================================================
-      
+   #Check to see which classes were manually notated 
+   max_class = len(labels)
+   xx =np.unique(Lc[Lc >0]-1).astype(int)
+   labels = [labels[i] for i in xx]
+   classes = {k: classes[k] for k in labels}
+   cmap1 = [cmap1[i] for i in xx]
+   cmap = colors.ListedColormap(cmap1)  
+   #===========================================================================================================   
+   
+   
    print('Generating dense scene from sparse labels ....')
    res,p = getCRF_justcol(rgb_img, Lc.astype('int'), theta, n_iter, classes, compat_col, scale)
 
@@ -361,11 +370,23 @@ if __name__ == '__main__':
    resr = median(resr, disk(5))
    Lcorig = Lcr.copy().astype('float')
    
+
    
+   # Map Labels to classification numbers
+   def get_bounds_norm(resr):
+      u = np.unique(resr)
+      bounds = np.concatenate(([resr.min()-1], u[:-1]+np.diff(u)/2. ,[resr.max()+1]))
+      norm = colors.BoundaryNorm(bounds, len(bounds)-1)
+      return bounds, norm
+   
+   bounds, norm = get_bounds_norm(resr)
+
    Lcorig[Lcorig<1] = np.nan  
        
    savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
 
+
+   Lcorig[Lcorig<1] = np.nan  
 
    #=============================================   
    #=============================================
@@ -386,11 +407,11 @@ if __name__ == '__main__':
 
    _ = ax1.imshow(rgb_img)
    #plt.title('b) Unary potentials', loc='left', fontsize=6)
-   im2 = ax1.imshow(Lcorig-1, cmap=cmap, alpha=0.5, vmin=0, vmax=len(cmap1))
+   im2 = ax1.imshow(Lcorig-1, cmap=cmap, norm=norm, alpha=0.5)
    divider = make_axes_locatable(ax1)
    cax = divider.append_axes("right", size="5%")
-   cb=plt.colorbar(im2, cax=cax)
-   cb.set_ticks(0.5+np.arange(len(labels)+1))
+   cb=plt.colorbar(im2, cax=cax, cmap=cmap, norm=norm)
+   cb.set_ticks(bounds[:-1]+np.diff(bounds)/2.)
    cb.ax.set_yticklabels(labels)
    cb.ax.tick_params(labelsize=4)
 
@@ -401,16 +422,18 @@ if __name__ == '__main__':
 
    _ = ax1.imshow(rgb_img)
    #plt.title('c) CRF prediction', loc='left', fontsize=6)
-   im2 = ax1.imshow(resr, cmap=cmap, alpha=0.5, vmin=0, vmax=len(labels))
+   im2 = ax1.imshow(resr, cmap=cmap,norm=norm, alpha=0.5)
    divider = make_axes_locatable(ax1)
    cax = divider.append_axes("right", size="5%")
-   cb=plt.colorbar(im2, cax=cax)
-   cb.set_ticks(0.5+np.arange(len(labels)+1))
+   cb=plt.colorbar(im2, cmap=cmap, norm=norm, cax=cax)
+   cb.set_ticks(bounds[:-1]+np.diff(bounds)/2.)
    cb.ax.set_yticklabels(labels)
    cb.ax.tick_params(labelsize=4)
    plt.savefig(name+'_mres.png', dpi=600)#, bbox_inches='tight')
    del fig; plt.close()
    
+   savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
+
    #=============================================   
    #=============================================
    if os.name=='posix': # true if linux/mac
