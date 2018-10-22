@@ -219,9 +219,9 @@ if __name__ == '__main__':
    labels_path = askopenfilename(filetypes=[("pick a labels file","*.txt")], multiple=False)  
    colors_path = askopenfilename(filetypes=[("pick a label colors file","*.txt")], multiple=False)  
    
-   image_path = r"C:\workspace\git_clones\dl_tools\data\test\rlc11412021250.jpg"
-   labels_path=r"C:\workspace\git_clones\dl_tools\labels.txt"
-   colors_path=r"C:\workspace\git_clones\dl_tools\label_colors.txt"
+   #image_path = r"C:\workspace\git_clones\dl_tools\data\test\rlc11412021250.jpg"
+   #labels_path=r"C:\workspace\git_clones\dl_tools\labels.txt"
+   #colors_path=r"C:\workspace\git_clones\dl_tools\label_colors.txt"
    #hostname = socket.gethostname()
 
    name, ext = os.path.splitext(image_path)
