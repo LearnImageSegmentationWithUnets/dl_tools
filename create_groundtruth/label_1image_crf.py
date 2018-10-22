@@ -199,12 +199,12 @@ if __name__ == '__main__':
    try:
       opts, args = getopt.getopt(argv,"h:w:s:")
    except getopt.GetoptError:
-      print('python int_seg_crf.py -w windowsize -s size')
+      print('python label_1image.py -w windowsize -s size')
       sys.exit(2)
 
    for opt, arg in opts:
       if opt == '-h':
-         print('Example usage: python int_seg_crf.py -w 400 -s 0.125')
+         print('Example usage: python label_1image.py -w 400 -s 0.125')
          sys.exit()
       elif opt in ("-w"):
          win = arg
@@ -351,8 +351,9 @@ if __name__ == '__main__':
    classes = {k: classes[k] for k in labels}
    cmap1 = [cmap1[i] for i in xx]
    cmap = colors.ListedColormap(cmap1)  
-   #===========================================================================================================
-      
+   #===========================================================================================================   
+   
+   
    print('Generating dense scene from sparse labels ....')
    res,p = getCRF_justcol(rgb_img, Lc.astype('int'), theta, n_iter, classes, compat_col, scale)
 
@@ -369,7 +370,7 @@ if __name__ == '__main__':
    resr = median(resr, disk(5))
    Lcorig = Lcr.copy().astype('float')
    
-   
+
    
    # Map Labels to classification numbers
    def get_bounds_norm(resr):
@@ -379,6 +380,11 @@ if __name__ == '__main__':
       return bounds, norm
    
    bounds, norm = get_bounds_norm(resr)
+
+   Lcorig[Lcorig<1] = np.nan  
+       
+   savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
+
 
    Lcorig[Lcorig<1] = np.nan  
 
@@ -423,7 +429,7 @@ if __name__ == '__main__':
    cb.set_ticks(bounds[:-1]+np.diff(bounds)/2.)
    cb.ax.set_yticklabels(labels)
    cb.ax.tick_params(labelsize=4)
-   plt.savefig(name+'_mres.png', dpi=600, bbox_inches='tight')
+   plt.savefig(name+'_mres.png', dpi=600)#, bbox_inches='tight')
    del fig; plt.close()
    
    savemat(image_path.split('.')[0]+'_mres.mat', {'sparse': Lcr.astype('int'), 'class': resr.astype('int'), 'preds': p.astype('float16'), 'labels': labels}, do_compression = True) 
