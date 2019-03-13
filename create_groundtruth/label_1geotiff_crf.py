@@ -57,19 +57,23 @@ def read_geotiff(image_path):
    """
 
    ##print('Reading GeoTIFF data ...')
-   if type(image_path) is not list:
-      input = [image_path]
+   #if type(image_path) is not list:
+   #   input = [image_path]
 
    ## read all arrays
    bs = []
-   for layer in input:
-      with rasterio.open(layer) as src:
-         layer = src.read()#[0,:,:]
-      w, h = (src.width, src.height)
-      xmin, ymin, xmax, ymax = src.bounds
-      crs = src.get_crs()
-      del src
-      bs.append({'bs':layer, 'w':w, 'h':h, 'xmin':xmin, 'xmax':xmax, 'ymin':ymin, 'ymax':ymax, 'crs':crs})
+   #for layer in input:
+   with rasterio.open(image_path) as src:
+      layer = src.read()#[0,:,:]
+      try:
+         crs = src.get_crs()
+      except:
+         crs = src.read_crs()	  
+   w, h = (src.width, src.height)
+   xmin, ymin, xmax, ymax = src.bounds
+
+   del src
+   bs.append({'bs':layer, 'w':w, 'h':h, 'xmin':xmin, 'xmax':xmax, 'ymin':ymin, 'ymax':ymax, 'crs':crs})
 
    ## resize arrays so common grid
    ##get bounds
@@ -362,14 +366,17 @@ if __name__ == '__main__':
    Zx,_ = sliding_window(gridx, (win, win), (win, win))
    Zy,_ = sliding_window(gridy, (win, win), (win, win))
 
+   img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+   
    out = np.zeros((nx,ny))    
 			
    for ck in range(len(Z)):
       #img = get_img(image_path, fct)
-      img, bs = read_geotiff(image_path)
-      img = resize_img(img, fct)	  
+      #img, bs = read_geotiff(image_path)
+      #img = resize_img(img, fct)	  
 	  
       cv2.rectangle(img, (np.min(Zy[ck]), np.min(Zx[ck])), (np.max(Zy[ck]), np.max(Zx[ck])), (255,0,0), 2)	  
+	  
       cv2.namedWindow('whole image')			
       cv2.imshow('whole image',img)
 	  
@@ -378,13 +385,14 @@ if __name__ == '__main__':
       counter=1
       if np.std(im)>0:
          for label in labels:
-            imcopy = im.copy()		    
+            imcopy = im.copy()
             conf = 0
             #=============================
             cv2.namedWindow(label) #+' ('+str(ck+1)+'/'+str(len(Z))+')')#, cv2.WND_PROP_FULLSCREEN) 
             cv2.moveWindow(label, 0,0)  # Move it to (0,0)
             #cv2.setWindowProperty(label, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             cv2.setMouseCallback(label,anno_draw)
+            im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             while(1):
                cv2.imshow(label,im)
                k=cv2.waitKey(1)&0xFF
