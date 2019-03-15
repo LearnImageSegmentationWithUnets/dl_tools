@@ -139,9 +139,10 @@ def norm_im(image_path):
 # =========================================================
 def eval_tiles(label, direc, numero, classifier_file, x, n):
    #print(label)
+   #get list of jpg files (or jpeg, JPG, JPEG) 
    infiles = []
-   for ext in ['jpg', 'JPG', 'jpeg', 'JPEG']:
-      infiles.append(glob(direc+os.sep+label+os.sep+'*.'+ext)[:numero])
+   for ext in ['*.jpg', '*.jpeg']:
+      infiles.extend(glob(direc + os.sep + label + os.sep + ext)[:numero])
 
    Z = []
    for image_path in infiles:
