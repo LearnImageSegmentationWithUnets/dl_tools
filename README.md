@@ -28,7 +28,7 @@ in which you'll also find more details about the algorithms and workflows used i
 > Open an anaconda terminal and clone this repository from github
 
 ```
-git clone https://github.com/dbuscombe-usgs/dl_tools.git
+git clone --depth 1 https://github.com/dbuscombe-usgs/dl_tools.git
 ```
 
 ![picture1](https://user-images.githubusercontent.com/3596509/45270458-4cea8500-b463-11e8-966c-04119bb8aba4.png)
