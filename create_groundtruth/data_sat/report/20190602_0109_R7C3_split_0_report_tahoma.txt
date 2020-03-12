@@ -1,0 +1,9 @@
+Image: 20190602_0109_R7C3_split_0
+Number of Pixels in image =27660288
+
+Class: percentage of pixels
+BackGround: 0.00031818179188879017
+Cloud: 0.9712778117133126
+Land: 0.0
+Water: 0.028404006494798607
+Processing time (mins): 6.812823267777761
